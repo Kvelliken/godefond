@@ -136,8 +136,21 @@ export default function Index() {
               Avkastning, risiko og Sharpe-ratio for norske fond
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {lastUpdated && (
+              <span className="text-[10px] text-muted-foreground font-data">
+                Oppdatert: {new Date(lastUpdated).toLocaleString('nb-NO')}
+              </span>
+            )}
             <span className="text-[11px] font-medium text-muted-foreground font-data">{fileName}</span>
+            <button
+              onClick={fetchLiveData}
+              disabled={isLoading}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-positive hover:bg-positive/90 text-positive-foreground text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCcw className="w-3.5 h-3.5" />}
+              Hent live data
+            </button>
             <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-lg transition-colors">
               <Upload className="w-3.5 h-3.5" />
               Last opp JSON
