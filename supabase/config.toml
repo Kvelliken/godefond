@@ -1,0 +1,4 @@
+project_id = "owqrypabkxkwepvqwamu"
+
+[functions.fetch-vff-data]
+verify_jwt = false

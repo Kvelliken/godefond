@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { Upload } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Upload, RefreshCcw, Loader2 } from 'lucide-react';
 import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA } from '@/lib/fund-types';
 import FundFilters from '@/components/FundFilters';
 import ScatterPlot from '@/components/ScatterPlot';
 import FundTable from '@/components/FundTable';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Index() {
   const [data, setData] = useState<FundData[]>(MOCK_DATA);
@@ -13,6 +14,27 @@ export default function Index() {
   const [companyFilter, setCompanyFilter] = useState("");
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "Fondsnavn", direction: "asc" });
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("3år");
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  const fetchLiveData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const { data: result, error } = await supabase.functions.invoke('fetch-vff-data');
+      if (error) throw error;
+      if (result?.funds) {
+        setData(result.funds as FundData[]);
+        setFileName(`VFF Live – ${result.metadata?.count ?? '?'} fond`);
+        setLastUpdated(result.metadata?.updated ?? null);
+        setTypeFilter(""); setGroupFilter(""); setCompanyFilter("");
+      }
+    } catch (err) {
+      console.error('Feil ved henting av VFF-data:', err);
+      alert('Kunne ikke hente data fra VFF. Prøv igjen senere.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "";
 
@@ -114,8 +136,21 @@ export default function Index() {
               Avkastning, risiko og Sharpe-ratio for norske fond
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {lastUpdated && (
+              <span className="text-[10px] text-muted-foreground font-data">
+                Oppdatert: {new Date(lastUpdated).toLocaleString('nb-NO')}
+              </span>
+            )}
             <span className="text-[11px] font-medium text-muted-foreground font-data">{fileName}</span>
+            <button
+              onClick={fetchLiveData}
+              disabled={isLoading}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-positive hover:bg-positive/90 text-positive-foreground text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCcw className="w-3.5 h-3.5" />}
+              Hent live data
+            </button>
             <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-lg transition-colors">
               <Upload className="w-3.5 h-3.5" />
               Last opp JSON
