@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
-import { Upload } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Upload, RefreshCcw, Loader2 } from 'lucide-react';
 import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA } from '@/lib/fund-types';
 import FundFilters from '@/components/FundFilters';
 import ScatterPlot from '@/components/ScatterPlot';
 import FundTable from '@/components/FundTable';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Index() {
   const [data, setData] = useState<FundData[]>(MOCK_DATA);
@@ -13,6 +14,27 @@ export default function Index() {
   const [companyFilter, setCompanyFilter] = useState("");
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "Fondsnavn", direction: "asc" });
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("3år");
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  const fetchLiveData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const { data: result, error } = await supabase.functions.invoke('fetch-vff-data');
+      if (error) throw error;
+      if (result?.funds) {
+        setData(result.funds as FundData[]);
+        setFileName(`VFF Live – ${result.metadata?.count ?? '?'} fond`);
+        setLastUpdated(result.metadata?.updated ?? null);
+        setTypeFilter(""); setGroupFilter(""); setCompanyFilter("");
+      }
+    } catch (err) {
+      console.error('Feil ved henting av VFF-data:', err);
+      alert('Kunne ikke hente data fra VFF. Prøv igjen senere.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "";
 
