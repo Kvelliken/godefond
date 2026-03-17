@@ -133,7 +133,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
               <g key={`x-${i}`}>
                 <line x1={sx(t)} y1={pad.top} x2={sx(t)} y2={height - pad.bottom} stroke="hsl(var(--border))" strokeWidth="1" />
                 <text x={sx(t)} y={height - pad.bottom + 16} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10, fontFamily: 'JetBrains Mono' }}>
-                  {t.toFixed(1)}
+                  {t.toFixed(t % 1 === 0 ? 0 : 1)}%
                 </text>
               </g>
             ))}

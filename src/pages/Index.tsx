@@ -132,7 +132,15 @@ export default function Index() {
     });
   };
 
-  const avgSharpe = parseNum(averages[`Sharpe_${chartPeriod}`]);
+  const avgSharpe = useMemo(() => {
+    const key = `Sharpe_${chartPeriod}`;
+    let sum = 0, count = 0;
+    filteredAndSorted.forEach(row => {
+      const val = parseNum(row[key]);
+      if (!isNaN(val)) { sum += val; count++; }
+    });
+    return count > 0 ? sum / count : NaN;
+  }, [filteredAndSorted, chartPeriod]);
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-8">
