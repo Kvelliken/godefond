@@ -72,11 +72,18 @@ export default function Index() {
   const availableCompanies = useMemo(() => getOptions('Forvaltningsselskap'), [data, typeFilter, groupFilter, companyFilter]);
 
   const filteredAndSorted = useMemo(() => {
-    let result = data.filter(item =>
-      (typeFilter === "" || item.Fondstype === typeFilter) &&
-      (groupFilter === "" || item.Fondsgruppe === groupFilter) &&
-      (companyFilter === "" || item.Forvaltningsselskap === companyFilter)
-    );
+    let result = data.filter(item => {
+      if (typeFilter !== "" && item.Fondstype !== typeFilter) return false;
+      if (groupFilter !== "" && item.Fondsgruppe !== groupFilter) return false;
+      if (companyFilter !== "" && item.Forvaltningsselskap !== companyFilter) return false;
+      // Min tegningsbeløp filter
+      if (minAmountFilter !== Infinity) {
+        const amt = parseNum(item["Min_tegningsbeløp"]);
+        const amount = isNaN(amt) ? 0 : amt;
+        if (amount >= minAmountFilter) return false;
+      }
+      return true;
+    });
 
     if (sortConfig.key) {
       result.sort((a, b) => {
