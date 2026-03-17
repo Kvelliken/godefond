@@ -27,7 +27,7 @@ export default function Index() {
         setData(result.funds as FundData[]);
         setFileName(`VFF Live – ${result.metadata?.count ?? '?'} fond`);
         setLastUpdated(result.metadata?.updated ?? null);
-        setTypeFilter(""); setGroupFilter(""); setCompanyFilter("");
+        setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000);
       }
     } catch (err) {
       console.error('Feil ved henting av VFF-data:', err);
