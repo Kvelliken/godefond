@@ -37,7 +37,7 @@ export default function Index() {
     }
   }, []);
 
-  const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "";
+  const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "" || minAmountFilter !== Infinity;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
