@@ -118,14 +118,24 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
         <div className="relative w-full overflow-hidden" style={{ aspectRatio: `${width}/${height}` }}>
           <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
             {/* Y grid */}
-            {yTicks.map((t, i) => (
-              <g key={`y-${i}`}>
-                <line x1={pad.left} y1={sy(t)} x2={width - pad.right} y2={sy(t)} stroke="hsl(var(--border))" strokeWidth="1" />
-                <text x={pad.left - 8} y={sy(t)} textAnchor="end" dominantBaseline="middle" className="fill-muted-foreground" style={{ fontSize: 10, fontFamily: 'JetBrains Mono' }}>
-                  {t.toFixed(1)}%
-                </text>
-              </g>
-            ))}
+            {yTicks.map((t, i) => {
+              const isZero = t === 0;
+              return (
+                <g key={`y-${i}`}>
+                  <line
+                    x1={pad.left} y1={sy(t)} x2={width - pad.right} y2={sy(t)}
+                    stroke={isZero ? "hsl(var(--foreground))" : "hsl(var(--border))"}
+                    strokeWidth={isZero ? 1.5 : 1}
+                    opacity={isZero ? 0.5 : 1}
+                  />
+                  <text x={pad.left - 8} y={sy(t)} textAnchor="end" dominantBaseline="middle"
+                    className={isZero ? "fill-foreground" : "fill-muted-foreground"}
+                    style={{ fontSize: 10, fontFamily: 'JetBrains Mono', fontWeight: isZero ? 600 : 400 }}>
+                    {t.toFixed(t % 1 === 0 ? 0 : 1)}%
+                  </text>
+                </g>
+              );
+            })}
 
             {/* X grid */}
             {xTicks.map((t, i) => (
