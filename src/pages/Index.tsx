@@ -98,7 +98,7 @@ export default function Index() {
       });
     }
     return result;
-  }, [data, typeFilter, groupFilter, companyFilter, sortConfig]);
+  }, [data, typeFilter, groupFilter, companyFilter, minAmountFilter, sortConfig]);
 
   const averages = useMemo(() => {
     const cols = [
