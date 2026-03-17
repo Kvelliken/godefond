@@ -32,22 +32,41 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
   const iH = height - pad.top - pad.bottom;
 
   const { minX, maxX, minY, maxY } = useMemo(() => {
-    if (!plotData.length) return { minX: 0, maxX: 10, minY: 0, maxY: 10 };
+    if (!plotData.length) return { minX: 0, maxX: 10, minY: -1, maxY: 10 };
+    const rawMinY = Math.min(0, ...plotData.map(d => d.y));
+    const rawMaxY = Math.max(...plotData.map(d => d.y));
     return {
       minX: 0,
       maxX: Math.max(...plotData.map(d => d.x)) * 1.15 || 10,
-      minY: Math.min(0, ...plotData.map(d => d.y)) * 1.1,
-      maxY: Math.max(...plotData.map(d => d.y)) * 1.15 || 10,
+      // Extend to nearest whole percent beyond data
+      minY: Math.floor(rawMinY * 1.1) - 0.5,
+      maxY: Math.ceil(rawMaxY * 1.15) + 0.5,
     };
   }, [plotData]);
 
   const sx = (x: number) => pad.left + ((x - minX) / (maxX - minX)) * iW;
   const sy = (y: number) => height - pad.bottom - ((y - minY) / (maxY - minY)) * iH;
 
+  // Generate ticks at whole or half percent steps, always including 0
   const yTicks = useMemo(() => {
+    const range = maxY - minY;
+    // Use 0.5 step if range is small, 1 step if medium, 2 if large, 5 if very large
+    let step = 0.5;
+    if (range > 10) step = 1;
+    if (range > 25) step = 2;
+    if (range > 50) step = 5;
+    if (range > 100) step = 10;
+
     const ticks: number[] = [];
-    const step = (maxY - minY) / 4;
-    for (let i = 0; i <= 4; i++) ticks.push(minY + step * i);
+    const start = Math.ceil(minY / step) * step;
+    for (let v = start; v <= maxY; v += step) {
+      ticks.push(Math.round(v * 10) / 10); // avoid float issues
+    }
+    // Ensure 0 is always included
+    if (!ticks.includes(0)) {
+      ticks.push(0);
+      ticks.sort((a, b) => a - b);
+    }
     return ticks;
   }, [minY, maxY]);
 
@@ -99,14 +118,24 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
         <div className="relative w-full overflow-hidden" style={{ aspectRatio: `${width}/${height}` }}>
           <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full">
             {/* Y grid */}
-            {yTicks.map((t, i) => (
-              <g key={`y-${i}`}>
-                <line x1={pad.left} y1={sy(t)} x2={width - pad.right} y2={sy(t)} stroke="hsl(var(--border))" strokeWidth="1" />
-                <text x={pad.left - 8} y={sy(t)} textAnchor="end" dominantBaseline="middle" className="fill-muted-foreground" style={{ fontSize: 10, fontFamily: 'JetBrains Mono' }}>
-                  {t.toFixed(1)}%
-                </text>
-              </g>
-            ))}
+            {yTicks.map((t, i) => {
+              const isZero = t === 0;
+              return (
+                <g key={`y-${i}`}>
+                  <line
+                    x1={pad.left} y1={sy(t)} x2={width - pad.right} y2={sy(t)}
+                    stroke={isZero ? "hsl(var(--foreground))" : "hsl(var(--border))"}
+                    strokeWidth={isZero ? 1.5 : 1}
+                    opacity={isZero ? 0.5 : 1}
+                  />
+                  <text x={pad.left - 8} y={sy(t)} textAnchor="end" dominantBaseline="middle"
+                    className={isZero ? "fill-foreground" : "fill-muted-foreground"}
+                    style={{ fontSize: 10, fontFamily: 'JetBrains Mono', fontWeight: isZero ? 600 : 400 }}>
+                    {t.toFixed(t % 1 === 0 ? 0 : 1)}%
+                  </text>
+                </g>
+              );
+            })}
 
             {/* X grid */}
             {xTicks.map((t, i) => (

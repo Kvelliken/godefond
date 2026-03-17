@@ -29,6 +29,7 @@ const FELT: Record<string, string> = {
   sharperatio3yr: "Sharpe_3år",
   sharperatio5yr: "Sharpe_5år",
   sharperatio10yr: "Sharpe_10år",
+  minsubscramnt: "Min_tegningsbeløp",
 };
 
 function normalizeFloat(val: unknown): string {
@@ -90,6 +91,10 @@ serve(async (req) => {
       for (const [apiKey, colName] of Object.entries(FELT)) {
         if (apiKey === "security_name" || apiKey === "complongname" || apiKey === "benchmarksymbol") {
           row[colName] = String(values[apiKey] || "");
+        } else if (apiKey === "minsubscramnt") {
+          // Keep as raw string/number for filtering
+          const raw = values[apiKey];
+          row[colName] = (raw === null || raw === undefined || raw === "" || raw === "None") ? "0" : String(raw).replace(',', '.');
         } else {
           row[colName] = normalizeFloat(values[apiKey]);
         }

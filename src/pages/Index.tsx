@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Upload, RefreshCcw, Loader2 } from 'lucide-react';
-import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA } from '@/lib/fund-types';
+import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA, NUMERIC_SORT_KEYS } from '@/lib/fund-types';
 import FundFilters from '@/components/FundFilters';
 import ScatterPlot from '@/components/ScatterPlot';
 import FundTable from '@/components/FundTable';
@@ -12,6 +12,7 @@ export default function Index() {
   const [typeFilter, setTypeFilter] = useState("");
   const [groupFilter, setGroupFilter] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
+  const [minAmountFilter, setMinAmountFilter] = useState(100000);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "Fondsnavn", direction: "asc" });
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("3år");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +27,7 @@ export default function Index() {
         setData(result.funds as FundData[]);
         setFileName(`VFF Live – ${result.metadata?.count ?? '?'} fond`);
         setLastUpdated(result.metadata?.updated ?? null);
-        setTypeFilter(""); setGroupFilter(""); setCompanyFilter("");
+        setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000);
       }
     } catch (err) {
       console.error('Feil ved henting av VFF-data:', err);
@@ -36,7 +37,7 @@ export default function Index() {
     }
   }, []);
 
-  const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "";
+  const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "" || minAmountFilter !== Infinity;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -47,7 +48,7 @@ export default function Index() {
         const uploaded = JSON.parse(e.target?.result as string);
         setData(uploaded);
         setFileName(file.name);
-        setTypeFilter(""); setGroupFilter(""); setCompanyFilter("");
+        setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000);
       } catch {
         alert("Ugyldig JSON-fil.");
       }
@@ -71,11 +72,18 @@ export default function Index() {
   const availableCompanies = useMemo(() => getOptions('Forvaltningsselskap'), [data, typeFilter, groupFilter, companyFilter]);
 
   const filteredAndSorted = useMemo(() => {
-    let result = data.filter(item =>
-      (typeFilter === "" || item.Fondstype === typeFilter) &&
-      (groupFilter === "" || item.Fondsgruppe === groupFilter) &&
-      (companyFilter === "" || item.Forvaltningsselskap === companyFilter)
-    );
+    let result = data.filter(item => {
+      if (typeFilter !== "" && item.Fondstype !== typeFilter) return false;
+      if (groupFilter !== "" && item.Fondsgruppe !== groupFilter) return false;
+      if (companyFilter !== "" && item.Forvaltningsselskap !== companyFilter) return false;
+      // Min tegningsbeløp filter
+      if (minAmountFilter !== Infinity) {
+        const amt = parseNum(item["Min_tegningsbeløp"]);
+        const amount = isNaN(amt) ? 0 : amt;
+        if (amount >= minAmountFilter) return false;
+      }
+      return true;
+    });
 
     if (sortConfig.key) {
       result.sort((a, b) => {
@@ -90,7 +98,7 @@ export default function Index() {
       });
     }
     return result;
-  }, [data, typeFilter, groupFilter, companyFilter, sortConfig]);
+  }, [data, typeFilter, groupFilter, companyFilter, minAmountFilter, sortConfig]);
 
   const averages = useMemo(() => {
     const cols = [
@@ -114,10 +122,14 @@ export default function Index() {
   }, [filteredAndSorted]);
 
   const handleSort = (key: string) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
-    }));
+    setSortConfig(prev => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      // First click: desc for numeric columns, asc for text
+      const defaultDir = NUMERIC_SORT_KEYS.includes(key) ? 'desc' : 'asc';
+      return { key, direction: defaultDir };
+    });
   };
 
   const avgSharpe = parseNum(averages[`Sharpe_${chartPeriod}`]);
@@ -162,8 +174,10 @@ export default function Index() {
         {/* Filters */}
         <FundFilters
           typeFilter={typeFilter} groupFilter={groupFilter} companyFilter={companyFilter}
+          minAmountFilter={minAmountFilter}
           onTypeChange={setTypeFilter} onGroupChange={setGroupFilter} onCompanyChange={setCompanyFilter}
-          onReset={() => { setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); }}
+          onMinAmountChange={setMinAmountFilter}
+          onReset={() => { setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000); }}
           availableTypes={availableTypes} availableGroups={availableGroups} availableCompanies={availableCompanies}
         />
 

@@ -1,13 +1,16 @@
 import React from 'react';
 import { RefreshCcw } from 'lucide-react';
+import { MIN_AMOUNT_OPTIONS } from '@/lib/fund-types';
 
 interface FundFiltersProps {
   typeFilter: string;
   groupFilter: string;
   companyFilter: string;
+  minAmountFilter: number;
   onTypeChange: (v: string) => void;
   onGroupChange: (v: string) => void;
   onCompanyChange: (v: string) => void;
+  onMinAmountChange: (v: number) => void;
   onReset: () => void;
   availableTypes: string[];
   availableGroups: string[];
@@ -15,8 +18,8 @@ interface FundFiltersProps {
 }
 
 export default function FundFilters({
-  typeFilter, groupFilter, companyFilter,
-  onTypeChange, onGroupChange, onCompanyChange, onReset,
+  typeFilter, groupFilter, companyFilter, minAmountFilter,
+  onTypeChange, onGroupChange, onCompanyChange, onMinAmountChange, onReset,
   availableTypes, availableGroups, availableCompanies,
 }: FundFiltersProps) {
   return (
@@ -31,7 +34,7 @@ export default function FundFilters({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="space-y-1">
           <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Fondstype</label>
           <select value={typeFilter} onChange={(e) => onTypeChange(e.target.value)} className="filter-select">
@@ -51,6 +54,18 @@ export default function FundFilters({
           <select value={companyFilter} onChange={(e) => onCompanyChange(e.target.value)} className="filter-select">
             <option value="">Alle selskaper</option>
             {availableCompanies.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div className="space-y-1">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Min. tegningsbeløp</label>
+          <select
+            value={minAmountFilter}
+            onChange={(e) => onMinAmountChange(Number(e.target.value))}
+            className="filter-select"
+          >
+            {MIN_AMOUNT_OPTIONS.map(opt => (
+              <option key={opt.label} value={opt.value}>{opt.label}</option>
+            ))}
           </select>
         </div>
       </div>
