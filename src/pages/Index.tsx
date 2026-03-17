@@ -12,6 +12,7 @@ export default function Index() {
   const [typeFilter, setTypeFilter] = useState("");
   const [groupFilter, setGroupFilter] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
+  const [minAmountFilter, setMinAmountFilter] = useState(100000);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "Fondsnavn", direction: "asc" });
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("3år");
   const [isLoading, setIsLoading] = useState(false);
