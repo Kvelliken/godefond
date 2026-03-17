@@ -181,15 +181,13 @@ export default function Index() {
           availableTypes={availableTypes} availableGroups={availableGroups} availableCompanies={availableCompanies}
         />
 
-        {/* Scatter Plot – visible when filters are active */}
-        {hasActiveFilter && (
-          <ScatterPlot
-            data={filteredAndSorted}
-            period={chartPeriod}
-            onPeriodChange={setChartPeriod}
-            avgSharpe={avgSharpe}
-          />
-        )}
+        {/* Scatter Plot */}
+        <ScatterPlot
+          data={filteredAndSorted}
+          period={chartPeriod}
+          onPeriodChange={setChartPeriod}
+          avgSharpe={avgSharpe}
+        />
 
         {/* Data Grid */}
         <FundTable
