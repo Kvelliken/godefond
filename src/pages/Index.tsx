@@ -174,8 +174,10 @@ export default function Index() {
         {/* Filters */}
         <FundFilters
           typeFilter={typeFilter} groupFilter={groupFilter} companyFilter={companyFilter}
+          minAmountFilter={minAmountFilter}
           onTypeChange={setTypeFilter} onGroupChange={setGroupFilter} onCompanyChange={setCompanyFilter}
-          onReset={() => { setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); }}
+          onMinAmountChange={setMinAmountFilter}
+          onReset={() => { setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000); }}
           availableTypes={availableTypes} availableGroups={availableGroups} availableCompanies={availableCompanies}
         />
 
