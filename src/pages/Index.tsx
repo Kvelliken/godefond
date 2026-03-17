@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Upload, RefreshCcw, Loader2 } from 'lucide-react';
-import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA } from '@/lib/fund-types';
+import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA, NUMERIC_SORT_KEYS } from '@/lib/fund-types';
 import FundFilters from '@/components/FundFilters';
 import ScatterPlot from '@/components/ScatterPlot';
 import FundTable from '@/components/FundTable';
