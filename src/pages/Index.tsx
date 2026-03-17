@@ -48,7 +48,7 @@ export default function Index() {
         const uploaded = JSON.parse(e.target?.result as string);
         setData(uploaded);
         setFileName(file.name);
-        setTypeFilter(""); setGroupFilter(""); setCompanyFilter("");
+        setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000);
       } catch {
         alert("Ugyldig JSON-fil.");
       }
