@@ -16,6 +16,7 @@ export interface FundData {
   "Sharpe_3år": string;
   "Sharpe_5år": string;
   "Sharpe_10år": string;
+  "Min_tegningsbeløp": string;
   [key: string]: string;
 }
 
