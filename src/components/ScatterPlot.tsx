@@ -47,35 +47,26 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
   const sx = (x: number) => pad.left + ((x - minX) / (maxX - minX)) * iW;
   const sy = (y: number) => height - pad.bottom - ((y - minY) / (maxY - minY)) * iH;
 
-  // Generate ticks at whole or half percent steps, always including 0
-  const yTicks = useMemo(() => {
-    const range = maxY - minY;
-    // Use 0.5 step if range is small, 1 step if medium, 2 if large, 5 if very large
-    let step = 0.5;
-    if (range > 10) step = 1;
-    if (range > 25) step = 2;
-    if (range > 50) step = 5;
-    if (range > 100) step = 10;
+  const generateNiceTicks = (min: number, max: number, maxTicks: number) => {
+    const range = max - min;
+    const steps = [0.5, 1, 2, 5, 10, 20, 50];
+    let step = steps.find(s => Math.ceil(range / s) <= maxTicks) ?? 100;
 
     const ticks: number[] = [];
-    const start = Math.ceil(minY / step) * step;
-    for (let v = start; v <= maxY; v += step) {
-      ticks.push(Math.round(v * 10) / 10); // avoid float issues
+    const start = Math.ceil(min / step) * step;
+    for (let v = start; v <= max + step * 0.01; v += step) {
+      ticks.push(Math.round(v * 10) / 10);
     }
-    // Ensure 0 is always included
     if (!ticks.includes(0)) {
       ticks.push(0);
       ticks.sort((a, b) => a - b);
     }
     return ticks;
-  }, [minY, maxY]);
+  };
 
-  const xTicks = useMemo(() => {
-    const ticks: number[] = [];
-    const step = (maxX - minX) / 4;
-    for (let i = 0; i <= 4; i++) ticks.push(minX + step * i);
-    return ticks;
-  }, [minX, maxX]);
+  const yTicks = useMemo(() => generateNiceTicks(minY, maxY, 10), [minY, maxY]);
+
+  const xTicks = useMemo(() => generateNiceTicks(minX, maxX, 10), [minX, maxX]);
 
   if (!plotData.length) {
     return (
@@ -142,7 +133,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
               <g key={`x-${i}`}>
                 <line x1={sx(t)} y1={pad.top} x2={sx(t)} y2={height - pad.bottom} stroke="hsl(var(--border))" strokeWidth="1" />
                 <text x={sx(t)} y={height - pad.bottom + 16} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10, fontFamily: 'JetBrains Mono' }}>
-                  {t.toFixed(1)}
+                  {t.toFixed(t % 1 === 0 ? 0 : 1)}%
                 </text>
               </g>
             ))}

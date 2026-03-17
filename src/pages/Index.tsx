@@ -132,7 +132,15 @@ export default function Index() {
     });
   };
 
-  const avgSharpe = parseNum(averages[`Sharpe_${chartPeriod}`]);
+  const avgSharpe = useMemo(() => {
+    const key = `Sharpe_${chartPeriod}`;
+    let sum = 0, count = 0;
+    filteredAndSorted.forEach(row => {
+      const val = parseNum(row[key]);
+      if (!isNaN(val)) { sum += val; count++; }
+    });
+    return count > 0 ? sum / count : NaN;
+  }, [filteredAndSorted, chartPeriod]);
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-8">
@@ -181,15 +189,13 @@ export default function Index() {
           availableTypes={availableTypes} availableGroups={availableGroups} availableCompanies={availableCompanies}
         />
 
-        {/* Scatter Plot – visible when filters are active */}
-        {hasActiveFilter && (
-          <ScatterPlot
-            data={filteredAndSorted}
-            period={chartPeriod}
-            onPeriodChange={setChartPeriod}
-            avgSharpe={avgSharpe}
-          />
-        )}
+        {/* Scatter Plot */}
+        <ScatterPlot
+          data={filteredAndSorted}
+          period={chartPeriod}
+          onPeriodChange={setChartPeriod}
+          avgSharpe={avgSharpe}
+        />
 
         {/* Data Grid */}
         <FundTable
