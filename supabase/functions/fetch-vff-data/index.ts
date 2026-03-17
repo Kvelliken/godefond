@@ -29,6 +29,7 @@ const FELT: Record<string, string> = {
   sharperatio3yr: "Sharpe_3år",
   sharperatio5yr: "Sharpe_5år",
   sharperatio10yr: "Sharpe_10år",
+  minsubscramnt: "Min_tegningsbeløp",
 };
 
 function normalizeFloat(val: unknown): string {
