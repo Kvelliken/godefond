@@ -122,10 +122,14 @@ export default function Index() {
   }, [filteredAndSorted]);
 
   const handleSort = (key: string) => {
-    setSortConfig(prev => ({
-      key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
-    }));
+    setSortConfig(prev => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      // First click: desc for numeric columns, asc for text
+      const defaultDir = NUMERIC_SORT_KEYS.includes(key) ? 'desc' : 'asc';
+      return { key, direction: defaultDir };
+    });
   };
 
   const avgSharpe = parseNum(averages[`Sharpe_${chartPeriod}`]);
