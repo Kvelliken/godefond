@@ -25,6 +25,14 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
     [data, xKey, yKey, sharpeKey]
   );
 
+  // Compute implied risk-free rate from centroid: Rf = avgY - avgSharpe * avgX
+  const impliedRf = useMemo(() => {
+    if (isNaN(avgSharpe) || !plotData.length) return NaN;
+    const avgX = plotData.reduce((s, d) => s + d.x, 0) / plotData.length;
+    const avgY = plotData.reduce((s, d) => s + d.y, 0) / plotData.length;
+    return avgY - avgSharpe * avgX;
+  }, [plotData, avgSharpe]);
+
   const width = 800;
   const height = 320;
   const pad = { top: 24, right: 32, bottom: 44, left: 56 };
