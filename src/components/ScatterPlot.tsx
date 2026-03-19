@@ -154,15 +154,15 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
               Avkastning (%)
             </text>
 
-            {/* Avg Sharpe line */}
-            {!isNaN(avgSharpe) && avgSharpe > 0 && (
+            {/* Gjennomsnittlig Sharpe stiplet linje (forankret i tyngdepunktet og implisitt rente) */}
+            {!isNaN(avgSharpe) && !isNaN(impliedRf) && (
               <line
-                x1={sx(0)} y1={sy(0)}
-                x2={sx(maxX)} y2={sy(maxX * avgSharpe)}
+                x1={sx(minX)} y1={sy(impliedRf + avgSharpe * minX)}
+                x2={sx(maxX)} y2={sy(impliedRf + avgSharpe * maxX)}
                 stroke="hsl(var(--primary))"
-                strokeWidth="1.5"
-                strokeDasharray="6,4"
-                opacity="0.6"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+                opacity="0.8"
               />
             )}
 
