@@ -14,7 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fund_cache: {
+        Row: {
+          data: Json
+          fund_count: number
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          data: Json
+          fund_count?: number
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          fund_count?: number
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -89,7 +89,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
       <div className="px-6 py-4 border-b border-border flex justify-between items-center">
         <h2 className="text-sm font-bold flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-primary" />
-          Risiko / Avkastning – Efficiency Matrix
+          Historisk risikojustert avkastning
         </h2>
         <div className="flex bg-muted p-1 rounded-lg">
           {PERIODS.map(p => (
@@ -148,10 +148,10 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
 
             {/* Axis labels */}
             <text x={width / 2} y={height - 4} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10 }}>
-              Volatilitet (%)
+              Årlig gjennomsnittlig risiko/volatilitet (%)
             </text>
             <text x={12} y={height / 2} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10 }} transform={`rotate(-90, 12, ${height / 2})`}>
-              Avkastning (%)
+              Årlig gjennomsnittlig avkastning (%)
             </text>
 
             {/* Gjennomsnittlig Sharpe stiplet linje (forankret i tyngdepunktet og implisitt rente) */}
@@ -177,7 +177,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
                   opacity="0.9"
                   className="hover:opacity-100 transition-opacity cursor-pointer"
                 >
-                  <title>{d.name}&#10;Avkastning: {d.y.toFixed(1)}%&#10;Volatilitet: {d.x.toFixed(1)}&#10;Sharpe: {isNaN(d.sharpe) ? '-' : d.sharpe.toFixed(2)}</title>
+                  <title>{`${d.name}\nAvkastning: ${d.y.toFixed(1)}%\nVolatilitet: ${d.x.toFixed(1)}%\nSharpe: ${isNaN(d.sharpe) ? '-' : d.sharpe.toFixed(2)}`}</title>
                 </circle>
               </g>
             ))}
