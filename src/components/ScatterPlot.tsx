@@ -177,7 +177,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
                   opacity="0.9"
                   className="hover:opacity-100 transition-opacity cursor-pointer"
                 >
-                  <title>{d.name}&#10;Avkastning: {d.y.toFixed(1)}%&#10;Volatilitet: {d.x.toFixed(1)}&#10;Sharpe: {isNaN(d.sharpe) ? '-' : d.sharpe.toFixed(2)}</title>
+                  <title>{`${d.name}\nAvkastning: ${d.y.toFixed(1)}%\nVolatilitet: ${d.x.toFixed(1)}%\nSharpe: ${isNaN(d.sharpe) ? '-' : d.sharpe.toFixed(2)}`}</title>
                 </circle>
               </g>
             ))}

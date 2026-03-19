@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -77,7 +78,6 @@ serve(async (req) => {
       const group = f.group || values.group || "";
       const typeName = lookupType(typeId, types);
 
-      // Skip funds without YTD
       const ytdRaw = values.rety2d;
       if (ytdRaw === null || ytdRaw === undefined || ytdRaw === "-" || ytdRaw === "" || ytdRaw === "None") continue;
 
@@ -92,7 +92,6 @@ serve(async (req) => {
         if (apiKey === "security_name" || apiKey === "complongname" || apiKey === "benchmarksymbol") {
           row[colName] = String(values[apiKey] || "");
         } else if (apiKey === "minsubscramnt") {
-          // Keep as raw string/number for filtering
           const raw = values[apiKey];
           row[colName] = (raw === null || raw === undefined || raw === "" || raw === "None") ? "0" : String(raw).replace(',', '.');
         } else {
@@ -103,12 +102,30 @@ serve(async (req) => {
       processed.push(row);
     }
 
-    // Sort alphabetically
     processed.sort((a, b) => (a.Fondsnavn || "").localeCompare(b.Fondsnavn || ""));
+
+    const now = new Date().toISOString();
+
+    // Save to fund_cache table
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const sb = createClient(supabaseUrl, supabaseKey);
+
+      // Delete old cache entries and insert new one
+      await sb.from("fund_cache").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      await sb.from("fund_cache").insert({
+        data: processed,
+        fund_count: processed.length,
+        updated_at: now,
+      });
+    } catch (dbErr) {
+      console.error("Failed to save to fund_cache:", dbErr);
+    }
 
     const result = {
       metadata: {
-        updated: new Date().toISOString(),
+        updated: now,
         count: processed.length,
         totalBeforeFilter: fonds.length,
       },
