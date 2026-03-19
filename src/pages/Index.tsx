@@ -1,5 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { Upload, RefreshCcw, Loader2 } from 'lucide-react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA, NUMERIC_SORT_KEYS } from '@/lib/fund-types';
 import FundFilters from '@/components/FundFilters';
 import ScatterPlot from '@/components/ScatterPlot';
@@ -8,53 +7,37 @@ import { supabase } from '@/integrations/supabase/client';
 
 export default function Index() {
   const [data, setData] = useState<FundData[]>(MOCK_DATA);
-  const [fileName, setFileName] = useState("Testdata");
   const [typeFilter, setTypeFilter] = useState("");
   const [groupFilter, setGroupFilter] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
   const [minAmountFilter, setMinAmountFilter] = useState(100000);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: "Fondsnavn", direction: "asc" });
   const [chartPeriod, setChartPeriod] = useState<ChartPeriod>("3år");
-  const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [fundCount, setFundCount] = useState<number | null>(null);
 
-  const fetchLiveData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { data: result, error } = await supabase.functions.invoke('fetch-vff-data');
-      if (error) throw error;
-      if (result?.funds) {
-        setData(result.funds as FundData[]);
-        setFileName(`VFF Live – ${result.metadata?.count ?? '?'} fond`);
-        setLastUpdated(result.metadata?.updated ?? null);
-        setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000);
-      }
-    } catch (err) {
-      console.error('Feil ved henting av VFF-data:', err);
-      alert('Kunne ikke hente data fra VFF. Prøv igjen senere.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const hasActiveFilter = typeFilter !== "" || groupFilter !== "" || companyFilter !== "" || minAmountFilter !== Infinity;
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
+  // Load cached data from database on mount
+  useEffect(() => {
+    const loadCachedData = async () => {
       try {
-        const uploaded = JSON.parse(e.target?.result as string);
-        setData(uploaded);
-        setFileName(file.name);
-        setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000);
-      } catch {
-        alert("Ugyldig JSON-fil.");
+        const { data: cache, error } = await supabase
+          .from('fund_cache')
+          .select('data, fund_count, updated_at')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (!error && cache?.data) {
+          setData(cache.data as unknown as FundData[]);
+          setLastUpdated(cache.updated_at);
+          setFundCount(cache.fund_count);
+        }
+      } catch (err) {
+        console.error('Feil ved lasting av data:', err);
       }
     };
-    reader.readAsText(file);
-  };
+    loadCachedData();
+  }, []);
 
   const getOptions = (field: string) => {
     const filtered = data.filter(item => {
