@@ -148,10 +148,10 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
 
             {/* Axis labels */}
             <text x={width / 2} y={height - 4} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10 }}>
-              Volatilitet (%)
+              Årlig gjennomsnittlig risiko/volatilitet (%)
             </text>
             <text x={12} y={height / 2} textAnchor="middle" className="fill-muted-foreground" style={{ fontSize: 10 }} transform={`rotate(-90, 12, ${height / 2})`}>
-              Avkastning (%)
+              Årlig gjennomsnittlig avkastning (%)
             </text>
 
             {/* Gjennomsnittlig Sharpe stiplet linje (forankret i tyngdepunktet og implisitt rente) */}
