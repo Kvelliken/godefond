@@ -89,7 +89,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
       <div className="px-6 py-4 border-b border-border flex justify-between items-center">
         <h2 className="text-sm font-bold flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-primary" />
-          Risiko / Avkastning – Efficiency Matrix
+          Historisk risikojustert avkastning
         </h2>
         <div className="flex bg-muted p-1 rounded-lg">
           {PERIODS.map(p => (
