@@ -113,7 +113,8 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
         {/* Legend */}
         <div className="flex items-center gap-4 text-[11px] text-muted-foreground mb-4">
           <span className="font-medium">Sharpe:</span>
-          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: getSharpeColor(0.5) }} /> &lt; 1.0</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: getSharpeColor(-0.5) }} /> &lt; 0</span>
+          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: getSharpeColor(0.5) }} /> 0–1.0</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: getSharpeColor(1.5) }} /> 1.0–2.0</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full" style={{ background: getSharpeColor(3) }} /> &ge; 2.0</span>
           <span className="ml-2 border-l border-border pl-2">Stiplet linje = snitt Sharpe</span>

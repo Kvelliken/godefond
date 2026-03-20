@@ -133,21 +133,19 @@ export default function Index() {
           <div>
             <h1 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-positive animate-pulse" />
-              Financial Intelligence Matrix
+              Hvilke fond gir deg best betalt for risiko?
             </h1>
             <p className="text-[12px] text-muted-foreground mt-1">
-              Avkastning, risiko og Sharpe-ratio for norske fond
+              Avkastning, risiko og Sharpe for norske fond
             </p>
           </div>
-          {lastUpdated && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg">
-              <div className="w-1.5 h-1.5 rounded-full bg-positive" />
-              <span className="text-[11px] text-muted-foreground font-data">
-                Sist oppdatert: {new Date(lastUpdated).toLocaleString('nb-NO')}
-                {fundCount !== null && ` · ${fundCount} fond`}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-lg">
+            <div className="w-1.5 h-1.5 rounded-full bg-positive" />
+            <span className="text-[11px] text-muted-foreground font-data">
+              Siste oppdatering: {data.length > 0 && data[0].Dato ? new Date(data[0].Dato).toLocaleDateString('nb-NO') : (lastUpdated ? new Date(lastUpdated).toLocaleDateString('nb-NO') : '–')}
+              {fundCount !== null && ` · ${fundCount} fond`}
+            </span>
+          </div>
         </header>
 
         {/* Filters */}

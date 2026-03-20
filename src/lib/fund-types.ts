@@ -43,13 +43,20 @@ export const formatReturn = (val: string | undefined): string => {
 
 export const getSharpeColor = (sharpe: number): string => {
   if (isNaN(sharpe)) return "hsl(215, 16%, 47%)";
-  if (sharpe < 1) {
-    const factor = Math.max(0, Math.min(1, (sharpe + 1) / 2));
-    return interpolateHSL([0, 84, 30], [0, 84, 70], factor);
+  if (sharpe < 0) {
+    // Red for negative Sharpe
+    const factor = Math.max(0, Math.min(1, (sharpe + 2) / 2));
+    return interpolateHSL([0, 84, 30], [0, 84, 50], factor);
+  } else if (sharpe < 1) {
+    // Orange for 0–1
+    const factor = sharpe;
+    return interpolateHSL([25, 95, 50], [38, 92, 55], factor);
   } else if (sharpe < 2) {
+    // Green transition for 1–2
     const factor = sharpe - 1;
-    return interpolateHSL([38, 92, 50], [142, 71, 50], factor);
+    return interpolateHSL([80, 70, 45], [142, 71, 50], factor);
   } else {
+    // Deep green for 2+
     const factor = Math.max(0, Math.min(1, (sharpe - 2) / 2));
     return interpolateHSL([142, 71, 55], [142, 71, 30], factor);
   }
