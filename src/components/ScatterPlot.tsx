@@ -87,10 +87,15 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
   return (
     <section className="surface-elevated rounded-2xl overflow-hidden">
       <div className="px-6 py-4 border-b border-border flex justify-between items-center">
-        <h2 className="text-sm font-bold flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-primary" />
-          Historisk risikojustert avkastning
-        </h2>
+        <div>
+          <h2 className="text-sm font-bold flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            Historisk risikojustert avkastning
+          </h2>
+          <p className="text-[11px] text-muted-foreground mt-1 ml-4 max-w-[600px]">
+            Sharpe måler hvor mye avkastning du sitter igjen med per enhet risiko, der 1 regnes som et solid resultat, 2 er svært bra, og 3 er i absolutt verdensklasse
+          </p>
+        </div>
         <div className="flex bg-muted p-1 rounded-lg">
           {PERIODS.map(p => (
             <button
