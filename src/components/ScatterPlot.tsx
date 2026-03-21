@@ -142,10 +142,10 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
       const dataY2 = invY(Math.min(y1, y2));
 
       setZoomView({
-        xMin: dataX1,
-        xMax: dataX2,
-        yMin: dataY1,
-        yMax: dataY2,
+        minX: dataX1,
+        maxX: dataX2,
+        minY: dataY1,
+        maxY: dataY2,
       });
     }
 
@@ -156,23 +156,22 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
 
   const handleZoomIn = useCallback(() => {
     const cur = zoomView ?? fullBounds;
-    const cx = (cur.xMin + cur.xMax) / 2;
-    const cy = (cur.yMin + cur.yMax) / 2;
-    const hw = (cur.xMax - cur.xMin) / 4;
-    const hh = (cur.yMax - cur.yMin) / 4;
-    setZoomView({ xMin: cx - hw, xMax: cx + hw, yMin: cy - hh, yMax: cy + hh });
+    const cx = (cur.minX + cur.maxX) / 2;
+    const cy = (cur.minY + cur.maxY) / 2;
+    const hw = (cur.maxX - cur.minX) / 4;
+    const hh = (cur.maxY - cur.minY) / 4;
+    setZoomView({ minX: cx - hw, maxX: cx + hw, minY: cy - hh, maxY: cy + hh });
   }, [zoomView, fullBounds]);
 
   const handleZoomOut = useCallback(() => {
     if (!zoomView) return;
-    const cx = (zoomView.xMin + zoomView.xMax) / 2;
-    const cy = (zoomView.yMin + zoomView.yMax) / 2;
-    const hw = (zoomView.xMax - zoomView.xMin);
-    const hh = (zoomView.yMax - zoomView.yMin);
-    const newView = { xMin: cx - hw, xMax: cx + hw, yMin: cy - hh, yMax: cy + hh };
-    // If zoomed out past full bounds, reset
-    if (newView.xMin <= fullBounds.minX && newView.xMax >= fullBounds.maxX &&
-        newView.yMin <= fullBounds.minY && newView.yMax >= fullBounds.maxY) {
+    const cx = (zoomView.minX + zoomView.maxX) / 2;
+    const cy = (zoomView.minY + zoomView.maxY) / 2;
+    const hw = (zoomView.maxX - zoomView.minX);
+    const hh = (zoomView.maxY - zoomView.minY);
+    const newView = { minX: cx - hw, maxX: cx + hw, minY: cy - hh, maxY: cy + hh };
+    if (newView.minX <= fullBounds.minX && newView.maxX >= fullBounds.maxX &&
+        newView.minY <= fullBounds.minY && newView.maxY >= fullBounds.maxY) {
       setZoomView(null);
     } else {
       setZoomView(newView);
@@ -181,7 +180,6 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
 
   const handleReset = useCallback(() => setZoomView(null), []);
 
-  // Scroll wheel zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     const pt = toSvgCoords(e);
@@ -192,17 +190,16 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
     const dataX = invX(pt.x);
     const dataY = invY(pt.y);
 
-    const newXMin = dataX - (dataX - cur.xMin) * factor;
-    const newXMax = dataX + (cur.xMax - dataX) * factor;
-    const newYMin = dataY - (dataY - cur.yMin) * factor;
-    const newYMax = dataY + (cur.yMax - dataY) * factor;
+    const newMinX = dataX - (dataX - cur.minX) * factor;
+    const newMaxX = dataX + (cur.maxX - dataX) * factor;
+    const newMinY = dataY - (dataY - cur.minY) * factor;
+    const newMaxY = dataY + (cur.maxY - dataY) * factor;
 
-    // If zoomed out past full, reset
-    if (newXMin <= fullBounds.minX && newXMax >= fullBounds.maxX &&
-        newYMin <= fullBounds.minY && newYMax >= fullBounds.maxY) {
+    if (newMinX <= fullBounds.minX && newMaxX >= fullBounds.maxX &&
+        newMinY <= fullBounds.minY && newMaxY >= fullBounds.maxY) {
       setZoomView(null);
     } else {
-      setZoomView({ xMin: newXMin, xMax: newXMax, yMin: newYMin, yMax: newYMax });
+      setZoomView({ minX: newMinX, maxX: newMaxX, minY: newMinY, maxY: newMaxY });
     }
   }, [toSvgCoords, zoomView, fullBounds, invX, invY, pad, width, height]);
 
