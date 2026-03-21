@@ -12,6 +12,11 @@ interface ScatterPlotProps {
 const PERIODS: ChartPeriod[] = ['1år', '3år', '5år', '10år'];
 
 interface ViewBox {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
   xMin: number;
   xMax: number;
   yMin: number;
