@@ -17,11 +17,6 @@ interface ViewBox {
   minY: number;
   maxY: number;
 }
-  xMin: number;
-  xMax: number;
-  yMin: number;
-  yMax: number;
-}
 
 export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }: ScatterPlotProps) {
   const xKey = `Volatilitet_${period}`;
