@@ -55,7 +55,7 @@ export default function Index() {
   const availableCompanies = useMemo(() => getOptions('Forvaltningsselskap'), [data, typeFilter, groupFilter, companyFilter]);
 
   const filteredAndSorted = useMemo(() => {
-    let result = data.filter(item => {
+    const result = data.filter(item => {
       if (typeFilter !== "" && item.Fondstype !== typeFilter) return false;
       if (groupFilter !== "" && item.Fondsgruppe !== groupFilter) return false;
       if (companyFilter !== "" && item.Forvaltningsselskap !== companyFilter) return false;
