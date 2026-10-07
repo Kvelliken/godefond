@@ -3,10 +3,10 @@
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
 // src/lib/mcp/index.ts
-import { defineMcp } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineMcp } from "npm:@lovable.dev/mcp-js@0.26.3";
 
 // src/lib/mcp/tools/search-funds.ts
-import { defineTool } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z } from "npm:zod@^3.25.76";
 
 // src/lib/mcp/supabase.ts
@@ -141,7 +141,7 @@ ${JSON.stringify(rows, null, 2)}`
 });
 
 // src/lib/mcp/tools/get-fund.ts
-import { defineTool as defineTool2, ToolError } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool2, ToolError } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z2 } from "npm:zod@^3.25.76";
 var get_fund_default = defineTool2({
   name: "get_fund",
@@ -165,7 +165,7 @@ var get_fund_default = defineTool2({
 });
 
 // src/lib/mcp/tools/list-filter-options.ts
-import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.26.1";
+import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.26.3";
 import { z as z3 } from "npm:zod@^3.25.76";
 var FIELDS = ["Fondstype", "Fondsgruppe", "Forvaltningsselskap"];
 var list_filter_options_default = defineTool3({
@@ -202,5 +202,5 @@ var mcp_default = defineMcp({
 });
 
 // lovable-mcp-supabase-entry.ts
-import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.26.1/stacks/supabase";
+import { createSupabaseHandler } from "npm:@lovable.dev/mcp-js@0.26.3/stacks/supabase";
 Deno.serve(createSupabaseHandler(mcp_default, { functionName: "mcp" }));
