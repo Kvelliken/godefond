@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA, NUMERIC_SORT_KEYS } from '@/lib/fund-types';
+import { FundData, SortConfig, ChartPeriod, parseNum, MOCK_DATA, NUMERIC_SORT_KEYS, DEFAULT_FUND_TYPE } from '@/lib/fund-types';
 import FundFilters from '@/components/FundFilters';
 import ScatterPlot from '@/components/ScatterPlot';
 import FundTable from '@/components/FundTable';
@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export default function Index() {
   const [data, setData] = useState<FundData[]>(MOCK_DATA);
-  const [typeFilter, setTypeFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState(DEFAULT_FUND_TYPE);
   const [groupFilter, setGroupFilter] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
   const [minAmountFilter, setMinAmountFilter] = useState(100000);
@@ -28,7 +28,10 @@ export default function Index() {
           .maybeSingle();
 
         if (!error && cache?.data) {
-          setData(cache.data as unknown as FundData[]);
+          const loaded = cache.data as unknown as FundData[];
+          setData(loaded);
+          // Standard er aksjefond; hvis typen ikke finnes i dataene, vis alle
+          if (!loaded.some(f => f.Fondstype === DEFAULT_FUND_TYPE)) setTypeFilter("");
           setLastUpdated(cache.updated_at);
           setFundCount(cache.fund_count);
         }
@@ -55,7 +58,7 @@ export default function Index() {
   const availableCompanies = useMemo(() => getOptions('Forvaltningsselskap'), [data, typeFilter, groupFilter, companyFilter]);
 
   const filteredAndSorted = useMemo(() => {
-    let result = data.filter(item => {
+    const result = data.filter(item => {
       if (typeFilter !== "" && item.Fondstype !== typeFilter) return false;
       if (groupFilter !== "" && item.Fondsgruppe !== groupFilter) return false;
       if (companyFilter !== "" && item.Forvaltningsselskap !== companyFilter) return false;
@@ -86,6 +89,7 @@ export default function Index() {
   const averages = useMemo(() => {
     const cols = [
       'Avkastning_YTD_%', 'Avkastning_snitt_1år_%', 'Avkastning_snitt_3år_%', 'Avkastning_snitt_5år_%', 'Avkastning_snitt_10år_%',
+      'Volatilitet_1år', 'Volatilitet_3år', 'Volatilitet_5år', 'Volatilitet_10år',
       'Sharpe_1år', 'Sharpe_3år', 'Sharpe_5år', 'Sharpe_10år'
     ];
     const sums: Record<string, number> = {};
@@ -154,7 +158,7 @@ export default function Index() {
           minAmountFilter={minAmountFilter}
           onTypeChange={setTypeFilter} onGroupChange={setGroupFilter} onCompanyChange={setCompanyFilter}
           onMinAmountChange={setMinAmountFilter}
-          onReset={() => { setTypeFilter(""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000); }}
+          onReset={() => { setTypeFilter(data.some(f => f.Fondstype === DEFAULT_FUND_TYPE) ? DEFAULT_FUND_TYPE : ""); setGroupFilter(""); setCompanyFilter(""); setMinAmountFilter(100000); }}
           availableTypes={availableTypes} availableGroups={availableGroups} availableCompanies={availableCompanies}
         />
 

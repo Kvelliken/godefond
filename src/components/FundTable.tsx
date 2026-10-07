@@ -19,6 +19,8 @@ const RETURN_KEYS = [
   'Avkastning_snitt_10år_%',
 ];
 
+const RISK_KEYS = ['Volatilitet_1år', 'Volatilitet_3år', 'Volatilitet_5år', 'Volatilitet_10år'];
+
 const SHARPE_KEYS = ['Sharpe_1år', 'Sharpe_3år', 'Sharpe_5år', 'Sharpe_10år'];
 
 function Th({ label, sortKey, align = 'left', sortConfig, onSort }: {
@@ -60,6 +62,9 @@ export default function FundTable({ data, total, sortConfig, onSort, averages }:
               <th colSpan={5} className="matrix-cell bg-primary/5 text-center text-[11px] font-bold uppercase tracking-wider text-primary border-r border-border">
                 Avkastning (%)
               </th>
+              <th colSpan={4} className="matrix-cell bg-destructive/5 text-center text-[11px] font-bold uppercase tracking-wider text-destructive border-r border-border">
+                Risiko / volatilitet (%)
+              </th>
               <th colSpan={4} className="matrix-cell bg-positive/5 text-center text-[11px] font-bold uppercase tracking-wider text-positive">
                 Sharpe Ratio
               </th>
@@ -74,6 +79,10 @@ export default function FundTable({ data, total, sortConfig, onSort, averages }:
               <Th label="3 år" sortKey="Avkastning_snitt_3år_%" align="right" sortConfig={sortConfig} onSort={onSort} />
               <Th label="5 år" sortKey="Avkastning_snitt_5år_%" align="right" sortConfig={sortConfig} onSort={onSort} />
               <Th label="10 år" sortKey="Avkastning_snitt_10år_%" align="right" sortConfig={sortConfig} onSort={onSort} />
+              <Th label="1 år" sortKey="Volatilitet_1år" align="right" sortConfig={sortConfig} onSort={onSort} />
+              <Th label="3 år" sortKey="Volatilitet_3år" align="right" sortConfig={sortConfig} onSort={onSort} />
+              <Th label="5 år" sortKey="Volatilitet_5år" align="right" sortConfig={sortConfig} onSort={onSort} />
+              <Th label="10 år" sortKey="Volatilitet_10år" align="right" sortConfig={sortConfig} onSort={onSort} />
               <Th label="1 år" sortKey="Sharpe_1år" align="right" sortConfig={sortConfig} onSort={onSort} />
               <Th label="3 år" sortKey="Sharpe_3år" align="right" sortConfig={sortConfig} onSort={onSort} />
               <Th label="5 år" sortKey="Sharpe_5år" align="right" sortConfig={sortConfig} onSort={onSort} />
@@ -106,6 +115,10 @@ export default function FundTable({ data, total, sortConfig, onSort, averages }:
                   );
                 })}
 
+                {RISK_KEYS.map(key => (
+                  <td key={key} className="matrix-cell text-right text-foreground">{formatReturn(fond[key])}</td>
+                ))}
+
                 {SHARPE_KEYS.map((key, si) => {
                   const val = parseNum(fond[key]);
                   return (
@@ -123,7 +136,7 @@ export default function FundTable({ data, total, sortConfig, onSort, averages }:
 
             {data.length === 0 && (
               <tr>
-                <td colSpan={13} className="matrix-cell text-center py-12 text-muted-foreground">
+                <td colSpan={17} className="matrix-cell text-center py-12 text-muted-foreground">
                   Ingen fond matcher valgte filtre.
                 </td>
               </tr>
@@ -145,6 +158,9 @@ export default function FundTable({ data, total, sortConfig, onSort, averages }:
                     </td>
                   );
                 })}
+                {RISK_KEYS.map(key => (
+                  <td key={`avg-${key}`} className="matrix-cell text-right text-foreground">{averages[key]}</td>
+                ))}
                 {SHARPE_KEYS.map((key, i) => (
                   <td key={`avg-${key}`} className={`matrix-cell text-right text-positive ${i === 0 ? 'border-l border-border' : ''}`}>
                     {averages[key]}

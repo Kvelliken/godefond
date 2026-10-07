@@ -79,8 +79,11 @@ export const MIN_AMOUNT_OPTIONS = [
 
 export const NUMERIC_SORT_KEYS = [
   'Avkastning_YTD_%', 'Avkastning_snitt_1år_%', 'Avkastning_snitt_3år_%', 'Avkastning_snitt_5år_%', 'Avkastning_snitt_10år_%',
+  'Volatilitet_1år', 'Volatilitet_3år', 'Volatilitet_5år', 'Volatilitet_10år',
   'Sharpe_1år', 'Sharpe_3år', 'Sharpe_5år', 'Sharpe_10år',
 ];
+
+export const DEFAULT_FUND_TYPE = "Aksjefond";
 
 export const MOCK_DATA: FundData[] = [
   {"Fondsnavn": "DNB Global Indeks", "Fondstype": "Aksjefond", "Fondsgruppe": "Global", "Forvaltningsselskap": "DNB Asset Management", "Avkastning_YTD_%": "5.2", "Avkastning_snitt_1år_%": "20.1", "Avkastning_snitt_3år_%": "12.5", "Avkastning_snitt_5år_%": "15.0", "Avkastning_snitt_10år_%": "14.2", "Volatilitet_1år": "16.5", "Volatilitet_3år": "14.2", "Volatilitet_5år": "13.5", "Volatilitet_10år": "14.0", "Sharpe_1år": "1.2", "Sharpe_3år": "0.9", "Sharpe_5år": "1.1", "Sharpe_10år": "1.0", "Min_tegningsbeløp": "100"},

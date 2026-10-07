@@ -76,7 +76,7 @@ export default function ScatterPlot({ data, period, onPeriodChange, avgSharpe }:
   const generateNiceTicks = (min: number, max: number, maxTicks: number) => {
     const range = max - min;
     const steps = [0.5, 1, 2, 5, 10, 20, 50];
-    let step = steps.find(s => Math.ceil(range / s) <= maxTicks) ?? 100;
+    const step = steps.find(s => Math.ceil(range / s) <= maxTicks) ?? 100;
 
     const ticks: number[] = [];
     const start = Math.ceil(min / step) * step;

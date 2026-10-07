@@ -55,7 +55,7 @@ serve(async (req) => {
   try {
     const resp = await fetch(VFF_API_URL, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; LovableProxy/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; GodeFond/1.0)",
         "Accept": "application/json",
         "Referer": "https://vff.no/fondsdata",
       },
