@@ -498,7 +498,7 @@ def main():
 
     
 
-    # Lagrer også sharpe som JSON (fint for Lovable)
+    # Lagrer også sharpe som JSON (fint for videre bruk)
 
     sharpe_json_path = OUT_DIR / f"sharpe_snitt_{ts}.json"
 
@@ -1548,16 +1548,6 @@ export default function App() {
   );
 
 }
-
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7fc3bb1b-eacd-4f3e-a871-90dfc0668e34).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
